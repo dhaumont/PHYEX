@@ -5,7 +5,7 @@ SUBROUTINE POSNAM_PHY(TFILENAM, CDNAML, LDNEEDNAM, LDFOUND)
 !Wrapper to call the AROME version of posnam
 
 USE MODD_IO, ONLY: TFILEDATA
-USE NAMELIST_MOD, ONLY: POSNAM
+!USE NAMELIST_MOD, ONLY: POSNAM
 
 IMPLICIT NONE
 
@@ -14,7 +14,7 @@ CHARACTER(LEN=*), INTENT(IN)    :: CDNAML    !< Namelist name
 LOGICAL,          INTENT(IN)    :: LDNEEDNAM !< True to abort if namelist is absent
 LOGICAL,          INTENT(OUT)   :: LDFOUND   !< True if namelist has been found
 
-CALL POSNAM(TFILENAM%NLU, CDNAML)
+!CALL POSNAM(TFILENAM%NLU, CDNAML)
 LDFOUND=.TRUE. !Posnam aborts if not found
 
 END SUBROUTINE POSNAM_PHY
