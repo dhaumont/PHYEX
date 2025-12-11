@@ -41,7 +41,9 @@ ecbuild_find_package(NAME fiat REQUIRED)
 file(GLOB PHYEX_SOURCES
      ${CMAKE_CURRENT_SOURCE_DIR}/aux/*90
      ${CMAKE_CURRENT_SOURCE_DIR}/turb/*90
-     #     ${CMAKE_CURRENT_SOURCE_DIR}/conv/*90
+     ${CMAKE_CURRENT_SOURCE_DIR}/conv/*90
+     ${CMAKE_CURRENT_SOURCE_DIR}/conv/module/*90
+     ${CMAKE_CURRENT_SOURCE_DIR}/chem/module/*90
      ${CMAKE_CURRENT_SOURCE_DIR}/micro/*90
 )
 set(PHYEX_ENTRYPOINTS
