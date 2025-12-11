@@ -21,7 +21,7 @@ ecbuild_add_option(FEATURE PHYEX_BUILD_PROGS
                    DEFAULT OFF)
 
 if(HAVE_DOUBLE_PRECISION)
-  list(APPEND precision_list dp) 
+  list(APPEND precision_list dp)
 endif()
 
 if(HAVE_SINGLE_PRECISION)
@@ -29,7 +29,7 @@ if(HAVE_SINGLE_PRECISION)
 endif()
 
 #-----------------------------------------------------------------------
-# Dependencies 
+# Dependencies
 #-----------------------------------------------------------------------
 
 ecbuild_find_package(NAME fiat REQUIRED)
@@ -39,10 +39,11 @@ ecbuild_find_package(NAME fiat REQUIRED)
 #-----------------------------------------------------------------------
 
 file(GLOB PHYEX_SOURCES
-     ${CMAKE_SOURCE_DIR}/aux/*90
-     ${CMAKE_SOURCE_DIR}/turb/*90
-     ${CMAKE_SOURCE_DIR}/micro/*90
-) 
+     ${CMAKE_CURRENT_SOURCE_DIR}/aux/*90
+     ${CMAKE_CURRENT_SOURCE_DIR}/turb/*90
+     #     ${CMAKE_CURRENT_SOURCE_DIR}/conv/*90
+     ${CMAKE_CURRENT_SOURCE_DIR}/micro/*90
+)
 set(PHYEX_ENTRYPOINTS
     aux/ini_phyex.F90
     micro/rain_ice.F90
@@ -52,35 +53,35 @@ set(PHYEX_ENTRYPOINTS
     micro/lima.F90
     micro/lima_adjust_split.F90
 )
-if(EXISTS ${CMAKE_SOURCE_DIR}/pyphyex.F90)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/pyphyex.F90)
   list(APPEND PHYEX_ENTRYPOINTS pyphyex.F90)
 endif()
 
-# diry headers and include dirs : 
+# diry headers and include dirs :
 set(GLOB PHYEX_HEADERS
-    ${CMAKE_SOURCE_DIR}/turb/*h
-    ${CMAKE_SOURCE_DIR}/micro/*h
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/turb>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/micro>
 )
-if(EXISTS ${CMAKE_SOURCE_DIR}/conv)
-  file(GLOB CONV_HEADERS ${CMAKE_SOURCE_DIR}/conv/*h)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/conv)
+  list(APPEND CONV_HEADERS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/conv>)
   list(APPEND PHYEX_HEADERS ${CONV_HEADERS})
 endif()
 
 set(PHYEX_INCLUDEDIRS
-    ${CMAKE_SOURCE_DIR}/aux
-    ${CMAKE_SOURCE_DIR}/micro
-    ${CMAKE_SOURCE_DIR}/turb
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/aux>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/micro>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/turb>
 )
-if(EXISTS ${CMAKE_SOURCE_DIR}/conv)
-  list(APPEND PHYEX_INCLUDEDIRS ${CMAKE_SOURCE_DIR}/conv)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/conv)
+  list(APPEND PHYEX_INCLUDEDIRS  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/conv>)
 endif()
 
 if(HAVE_PHYEX_BUILD_PROGS)
   # Source file directories
   file(GLOB PHYEXPROGS_SOURCES
-       ${CMAKE_SOURCE_DIR}/support/*90
-       ${CMAKE_SOURCE_DIR}/progs/*90
-  ) 
+       ${CMAKE_CURRENT_SOURCE_DIR}/support/*90
+       ${CMAKE_CURRENT_SOURCE_DIR}/progs/*90
+  )
 
   # Entry points
   file(GLOB PHYEXPROGS_ENTRYPOINTS progs/main_*.F90)
@@ -103,7 +104,7 @@ foreach(PRECISION ${precision_list})
   else()
     set(PHYEX_COMPILE_OPTIONS_REAL ${ECBUILD_Fortran_COMPILE_OPTIONS_REAL4})
   endif()
-  
+
   #---------------
   #  Internal library (to prevent multiple compilations)
   #---------------
@@ -116,8 +117,7 @@ foreach(PRECISION ${precision_list})
       mpi_serial
       parkind_${PRECISION}
     TYPE STATIC
-    NOINSTALL
-    PRIVATE_INCLUDES ${PHYEX_INCLUDEDIRS}
+    PUBLIC_INCLUDES ${PHYEX_INCLUDEDIRS}
   )
 
   # Compilation option to use for unqualified REALs
@@ -146,30 +146,30 @@ foreach(PRECISION ${precision_list})
     PUBLIC_INCLUDES ${PHYEX_HEADERS}
     INSTALL_HEADERS ALL
     HEADER_DESTINATION include/${PRECISION}
-    PRIVATE_INCLUDES ${PHYEX_INCLUDEDIRS}
-  ) 
+    PUBLIC_INCLUDES ${PHYEX_INCLUDEDIRS}
+  )
 
   # Compilation option to use for unqualified REALs
   target_compile_options(phyex_${PRECISION} PUBLIC
     $<$<COMPILE_LANGUAGE:Fortran>:${PHYEX_COMPILE_OPTIONS_REAL}>)
 
-  # Install Library 
+  # Install Library
   install(
     TARGETS phyex_${PRECISION}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
-  
-  # Install Modules 
+
+  # Install Modules
   fortran_modules_install(
     TARGET phyex_${PRECISION}
     MODULE_DIR ${CMAKE_CURRENT_BINARY_DIR}/modules_${PRECISION}
   	INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/modules/${PRECISION}
   )
-  
+
   #---------------
   #  Progs
   #---------------
-  
+
   if(HAVE_PHYEX_BUILD_PROGS)
     # Buid a lib with files common to all the executables
     ecbuild_add_library(
@@ -181,7 +181,7 @@ foreach(PRECISION ${precision_list})
         parkind_${PRECISION}
       TYPE STATIC
       NOINSTALL
-    ) 
+    )
     if(DEFINED FPP_FLAGS_TESTPROGS)
       target_compile_definitions(phyexprogs_${PRECISION} PUBLIC ${FPP_FLAGS_TESTPROGS})
     endif()
@@ -195,7 +195,7 @@ foreach(PRECISION ${precision_list})
     # Compilation option to use for unqualified REALs
     target_compile_options(phyexprogs_${PRECISION} PUBLIC
       $<$<COMPILE_LANGUAGE:Fortran>:${PHYEX_COMPILE_OPTIONS_REAL}>)
-    
+
     # Build all executables
     foreach(EP ${PHYEXPROGS_ENTRYPOINTS})
       get_filename_component(NAME ${EP} NAME_WLE)
