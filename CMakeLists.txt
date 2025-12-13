@@ -139,8 +139,8 @@ foreach(PRECISION ${precision_list})
   ecbuild_add_library(
     TARGET phyex_${PRECISION}
     SOURCES ${PHYEX_ENTRYPOINTS}
-    PRIVATE_LIBS internal_phyex_${PRECISION}
     PUBLIC_LIBS
+     internal_phyex_${PRECISION}
       fiat
       mpi_serial
       parkind_${PRECISION}
