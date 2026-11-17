@@ -10,7 +10,7 @@
                                PRGT, PTHS, PRVS, PRCS, PRRS, PRIS, PRSS, PRGS,        &
                                PINPRC, PINPRR, PEVAP3D,                               &
                                PINPRS, PINPRG, PSIGS, PSEA, PTOWN,                    &
-                               OAERONRT, OAEIFN, PCLDROP, PIFNNC,                     &
+                               OAEIFN, PCLDROP, PIFNNC,                               &
                                TBUDGETS, KBUDGETS,                                    &
                                PICENU, PKGN_ACON, PKGN_SBGR,                          &
                                PRHT, PRHS, PINPRH, PFPR)
@@ -270,7 +270,6 @@ REAL, DIMENSION(D%NIJT),       INTENT(OUT) :: PINPRG! Graupel instant precip
 REAL, DIMENSION(D%NIJT),       INTENT(IN)  :: PSEA ! Sea Mask
 REAL, DIMENSION(D%NIJT),       INTENT(IN)  :: PTOWN! Fraction that is town
 ! nrt aerosol
-LOGICAL,                       INTENT(IN)  :: OAERONRT ! Switch for nrt aerosols
 LOGICAL,                       INTENT(IN)  :: OAEIFN   ! Switch to activate ice nuclei
 REAL, DIMENSION(D%NIJT,D%NKT), INTENT(IN)  :: PCLDROP  ! Activated Condensation nuclei (CCN)
 REAL, DIMENSION(D%NIJT,D%NKT), INTENT(IN)  :: PIFNNC   ! Ice freezing nuclei concentration
@@ -461,7 +460,7 @@ IF (NINT(ICEP%XFRMIN(18)) == 1) LTIW=.TRUE.
 
 IF (OSEDIC) THEN
   ZRAY(:,:)   = 0.
-  IF (ICEP%XFRMIN(26)>0.001 .OR. OAERONRT) THEN
+  IF (ICEP%XFRMIN(26)>0.001 .OR. PARAMI%LEXCLDROP) THEN
     ! Assume "average" distr. func for simplicity
     DO JK = D%NKTB,D%NKTE
       DO JIJ = D%NIJB,D%NIJE
@@ -505,7 +504,7 @@ IF (OSEDIC.OR.OCND2.OR.LKOGAN) THEN
       ZZZZ(JIJ,JK) = ZZZT(JIJ,JK) - 0.5*PDZZ(JIJ,JK)
     ENDDO
   ENDDO
-  IF (OAERONRT) THEN
+  IF (PARAMI%LEXCLDROP) THEN
   !Consider Cloud droplets obtained from CAMS aerosol mixing ratio fields
     DO JK = D%NKTB, D%NKTE
       DO JIJ = D%NIJB, D%NIJE
@@ -558,7 +557,7 @@ CALL RAIN_ICE_OLD_NUCLEATION(D, CST, ICEP, COUNT(ZT(D%NIJB:D%NIJE,D%NKTB:D%NKTE)
                              OCND2, LMODICEDEP, KRR, PTSTEP, &
                              PTHT, PPABST, PEXNREF, PICLDFR, PRHODJ, PRHODREF, &
                              PRVT, PRCT, PRRT, PRIT, PRST, PRGT, &
-                             OAERONRT, OAEIFN, PIFNNC, &
+                             PARAMI%LEXCLDROP, OAEIFN, PIFNNC, &
                              PTHS, PRVS, PRIS, PCIT, &
                              PICENU, ZT, ZZZZ, &
                              PRHT)
