@@ -276,7 +276,7 @@ END DO
 
 !
 !---------------------------------------------------------------------------
-IF (.NOT. OHARAT) THEN
+IF (.NOT. OHARAT .OR. KSV >0 ) THEN
 !
 !          1.3 1D Redelsperger numbers
 !
