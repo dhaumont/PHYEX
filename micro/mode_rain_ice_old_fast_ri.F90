@@ -24,7 +24,6 @@ MODULE MODE_RAIN_ICE_OLD_FAST_RI
                                   PCITRED, PCITRED23, PDICRIT,  &
                                   TBUDGETS, KBUDGETS)
 
-    USE PARKIND1,            ONLY: JPRB
     USE YOMHOOK,             ONLY: LHOOK, DR_HOOK, JPHOOK
     USE MODD_DIMPHYEX,       ONLY: DIMPHYEX_T
     USE MODD_CST,            ONLY: CST_T
@@ -184,14 +183,14 @@ MODULE MODE_RAIN_ICE_OLD_FAST_RI
             ZZWC(JK)=ZCRYSHA(JK)*0.878/PAI(JK)*(PCIT(JK)/PRHODREF(JK))**0.667 &
                  &*(MAX(ICED%XRTMIN(4)/PTSTEP,PRIS(JK))*PTSTEP*PW2D(JK))**0.333
 !     Ice supersaturated part of grid box:
-            IF (PSSIO(JK)>0. .AND. PSIFRC(JK) > 0.02_JPRB) THEN
+            IF (PSSIO(JK)>0. .AND. PSIFRC(JK) > 0.02) THEN
               ZZW(JK)  = ZZWC(JK)*PXW2D13(JK)*PSSIO(JK)
               PRIS(JK) = PRIS(JK) + ZZW(JK)*PSIFRC(JK)
               PRVS(JK) = PRVS(JK) - ZZW(JK)*PSIFRC(JK)  ! Budget here: ! cloud ice + vapor = const
               PZTHS(JK) = PZTHS(JK) + ZZW(JK)*PLSFACT(JK)*PSIFRC(JK) ! f(L_f*(RCBERI))
             END IF
 !    Ice subsaturated part of grid box:
-            IF (PSSIU(JK)<0. .AND. PSIFRC(JK) <0.98_JPRB) THEN
+            IF (PSSIU(JK)<0. .AND. PSIFRC(JK) <0.98) THEN
               PRIS(JK) = PRIS(JK) - ZCI2S(JK)
               PRSS(JK) = PRSS(JK) + ZCI2S(JK)
               ZZW(JK)  = ZZWC(JK)*PCITRED23*PSSIU(JK)
